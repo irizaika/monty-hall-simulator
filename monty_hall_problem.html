@@ -199,8 +199,8 @@ document.getElementById('runBtn').addEventListener('click', () => {
   const switchPct = ((sim.switchWins / trials) * 100).toFixed(2);
   const stayPct = ((sim.stayWins / trials) * 100).toFixed(2);
   document.getElementById('totalTrials').innerText = trials;
-  document.getElementById('switchWins').innerText = `${sim.switchWins} (${switchPct}%)`;
-  document.getElementById('stayWins').innerText = `${sim.stayWins} (${stayPct}%)`;
+  document.getElementById('switchWins').innerText = `${sim.switchWins}`;
+  document.getElementById('stayWins').innerText = `${sim.stayWins}`;
   document.getElementById('switchPct').innerText = switchPct + '%';
   document.getElementById('stayPct').innerText = stayPct + '%';
 
