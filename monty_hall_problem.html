@@ -4,257 +4,72 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Monty Hall Problem Simulator</title>
-<style>
-  :root { --bg:#f6f7fb; --card:#fff; --accent:#2b6cb0; --muted:#666; }
-  body{font-family:Inter, system-ui, Arial; background:var(--bg); margin:0; padding:24px; color:#111;}
-  .container{max-width:1100px;margin:0 auto;}
-  h1{margin:0 0 8px;}
-  .controls { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin:16px 0; }
-  input[type="number"]{padding:8px 10px; width:140px; border-radius:6px; border:1px solid #ddd;}
-  label{font-size:0.95rem;}
-  button{background:var(--accent); color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer;}
-  button.secondary{background:#444;}
-  .card{background:var(--card); padding:14px; border-radius:10px; box-shadow:0 6px 20px rgba(20,20,50,0.06);}
-  .summary{display:flex; gap:18px; flex-wrap:wrap; margin-top:14px;}
-  .summary .box{padding:10px 12px;border-radius:8px; background:#f3f6ff; min-width:150px;}
-  table{width:100%; border-collapse:collapse; margin-top:14px; font-size:0.95rem;}
-  th,td{padding:8px 10px; border-bottom:1px solid #eee; text-align:center;}
-  th{background:#fafcff; position:sticky; top:0;}
-  .small{font-size:0.85rem;color:var(--muted);}
-  .notice{margin-top:10px;color:#b35;}
-  .controls-right{margin-left:auto; display:flex; gap:8px; align-items:center;}
-  @media (max-width:700px){ th,td{font-size:0.8rem;padding:6px;} .summary{flex-direction:column;} }
-</style>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-   <h1 style="cursor:pointer; display:flex; align-items:center; gap:8px;" id="descHeader">
-  Monty Hall Problem Simulator 
-  <span id="arrow" style="transition:transform 0.3s; display:inline-block;">▼</span>
-</h1>
+    <div class="container">
+        <h1 style="cursor:pointer; display:flex; align-items:center; gap:8px;" id="descHeader">
+            Monty Hall Problem Simulator
+            <span id="arrow" style="transition:transform 0.3s; display:inline-block;">▼</span>
+        </h1>
 
-<div id="description">
-  <p class="desc">
-    The Monty Hall problem is a probability puzzle based on a game show. 
-    There are three doors: behind one is a car (the prize), behind the other two are goats. 
-    You choose a door. The host, who knows where the car is, opens a different door to reveal a goat. 
-    You are then offered a choice: <strong>stay</strong> with your original door or <strong>switch</strong> to the other unopened door. 
-    Surprisingly, switching doubles your chances of winning — from 1/3 to 2/3.
-  </p>
-  <p class="desc">
-    This simulator will generate <strong>random game trials</strong> based on your chosen number of simulations. 
-    For each trial, the program randomly places the car, records your initial choice, lets Monty open a goat door, and calculates the outcomes for both strategies (switch and stay).
-    If "Show details table" is enabled, you'll see per-trial data including:
-    <em>trial number, car location, your choice, Monty’s opened door, the switch choice, and whether each strategy won</em>. 
-    You can also export the full dataset as a CSV file for analysis.
-  </p>
-  </div>
-    <div class="card controls">
-      <label>
-        Trials:
-        <input type="number" id="trials" value="100" min="1" step="1">
-      </label>
+        <div id="description">
+            <p class="desc">
+                The Monty Hall problem is a probability puzzle based on a game show.
+                There are three doors: behind one is a car (the prize), behind the other two are goats.
+                You choose a door. The host, who knows where the car is, opens a different door to reveal a goat.
+                You are then offered a choice: <strong>stay</strong> with your original door or <strong>switch</strong> to the other unopened door.
+                Surprisingly, switching doubles your chances of winning — from 1/3 to 2/3.
+            </p>
+            <p class="desc">
+                This simulator will generate <strong>random game trials</strong> based on your chosen number of simulations.
+                For each trial, the program randomly places the car, records your initial choice, lets Monty open a goat door, and calculates the outcomes for both strategies (switch and stay).
+                If "Show details table" is enabled, you'll see per-trial data including:
+                <em>trial number, car location, your choice, Monty’s opened door, the switch choice, and whether each strategy won</em>.
+                You can also export the full dataset as a CSV file for analysis.
+            </p>
+        </div>
+        <div class="card controls">
+            <label>
+                Trials:
+                <input type="number" id="trials" value="100" min="1" max="10000000" step="1" />
+            </label>
 
-      <label>
-        <input type="checkbox" id="showDetails" checked>
-        Show details table
-      </label>
+            <label>
+                <input type="checkbox" id="showDetails" checked>
+                Show details table
+            </label>
 
-      <label>
-        Max rows to display:
-        <input type="number" id="maxRows" value="200" min="1" step="1" title="Only this many rows will be shown in the table to keep the page responsive.">
-      </label>
+            <label>
+                Max rows to display:
+                <input type="number" id="maxRows" value="200" min="1" max="1000" step="1" title="Only this many rows will be shown in the table to keep the page responsive.">
+            </label>
+            <div class="controls-right">
+                <button id="runBtn">Run Simulation</button>
+                <button id="downloadBtn" class="secondary" title="Download full trial data as CSV">Export CSV</button>
+            </div>
+        </div>
 
-      <div class="controls-right">
-        <button id="runBtn">Run Simulation</button>
-        <button id="downloadBtn" class="secondary" title="Download full trial data as CSV">Export CSV</button>
-      </div>
+        <div id="output" class="card" style="margin-top:12px;">
+            <div class="summary" id="summaryArea">
+                <div class="box"><strong>Total trials</strong><div id="totalTrials" class="small">—</div></div>
+                <div class="box"><strong>Always switch wins</strong><div id="switchWins" class="small">—</div></div>
+                <div class="box"><strong>Never switch wins</strong><div id="stayWins" class="small">—</div></div>
+                <div class="box"><strong>Switch wins%</strong><div id="switchPct" class="small">—</div></div>
+                <div class="box"><strong>Stay wins%</strong><div id="stayPct" class="small">—</div></div>
+            </div>
+
+            <div id="tableContainer" style="margin-top:12px;"></div>
+            <div id="notice" class="notice"></div>
+        </div>
+        <div id="loading" style="display:none; margin-top:10px; text-align:center;">
+            <div class="spinner"></div>
+        </div>
+        <div id="floatMessage" class="popUpMessage">
+            Value too big, adjusted to max allowed.
+        </div>
     </div>
 
-    <div id="output" class="card" style="margin-top:12px;">
-      <div class="summary" id="summaryArea">
-        <div class="box"><strong>Total trials</strong><div id="totalTrials" class="small">—</div></div>
-        <div class="box"><strong>Always switch wins</strong><div id="switchWins" class="small">—</div></div>
-        <div class="box"><strong>Never switch wins</strong><div id="stayWins" class="small">—</div></div>
-        <div class="box"><strong>Switch wins%</strong><div id="switchPct" class="small">—</div></div>
-        <div class="box"><strong>Stay wins%</strong><div id="stayPct" class="small">—</div></div>
-      </div>
-
-      <div id="tableContainer" style="margin-top:12px;"></div>
-      <div id="notice" class="notice"></div>
-    </div>
-  </div>
-
-<script>
-/*
-  Detailed Monty Hall frontend simulation
-  - Keeps full trial data in memory (as JS objects).
-  - Displays up to maxRows in the table for performance.
-  - Allows CSV export of ALL trials.
-*/
-
-function simulateMontyHall(trials, collectAll=true) {
-  const results = [];
-  let switchWins = 0;
-  let stayWins = 0;
-
-  for (let t = 1; t <= trials; t++) {
-    // Setup
-    const doors = [0,1,2];
-    const car = Math.floor(Math.random()*3); // 0..2
-    const player = Math.floor(Math.random()*3);
-
-    // Monty opens: pick a door that's not player's and not car
-    const montyChoices = doors.filter(d => d !== player && d !== car);
-    // If player initially chose car, monty has two choices -> choose random among them
-    const monty = montyChoices[Math.floor(Math.random()*montyChoices.length)];
-
-    // Switch choice is the sole remaining unopened door
-    const switchChoice = doors.find(d => d !== player && d !== monty);
-
-    // Outcomes
-    const switchWin = (switchChoice === car);
-    const stayWin = (player === car);
-
-    if (switchWin) switchWins++;
-    if (stayWin) stayWins++;
-
-    if (collectAll) {
-      results.push({
-        trial: t,
-        car,
-        player,
-        monty,
-        switchChoice,
-        switchWin,
-        stayWin
-      });
-    }
-  }
-
-  return {
-    trials,
-    switchWins,
-    stayWins,
-    results
-  };
-}
-
-// Helper: build table HTML for first N rows
-function buildTableHtml(rows, maxDisplay) {
-  if (!rows || rows.length === 0) return '';
-  const displayRows = rows.slice(0, maxDisplay);
-  let html = '<div style="overflow:auto; max-height:520px;"><table><thead><tr>' +
-             '<th>#</th><th>Car</th><th>Player pick</th><th>Monty opens</th><th>Switch pick</th>' +
-             '<th>Switch win</th><th>Stay win</th></tr></thead><tbody>';
-  for (const r of displayRows) {
-    html += `<tr>
-      <td>${r.trial}</td>
-      <td>${r.car}</td>
-      <td>${r.player}</td>
-      <td>${r.monty}</td>
-      <td>${r.switchChoice}</td>
-      <td>${r.switchWin ? '✅' : '❌'}</td>
-      <td>${r.stayWin ? '✅' : '❌'}</td>
-    </tr>`;
-  }
-  html += '</tbody></table></div>';
-  return html;
-}
-
-// Convert full results array to CSV
-function toCSV(results) {
-  if (!results || results.length===0) return '';
-  const headers = ['trial','car','player','monty','switchChoice','switchWin','stayWin'];
-  const lines = [headers.join(',')];
-  for (const r of results) {
-    const row = [
-      r.trial,
-      r.car,
-      r.player,
-      r.monty,
-      r.switchChoice,
-      r.switchWin ? '1' : '0',
-      r.stayWin ? '1' : '0'
-    ];
-    lines.push(row.join(','));
-  }
-  return lines.join('\n');
-}
-
-document.getElementById('runBtn').addEventListener('click', () => {
-  const trials = parseInt(document.getElementById('trials').value) || 0;
-  const showDetails = document.getElementById('showDetails').checked;
-  const maxRows = parseInt(document.getElementById('maxRows').value) || 200;
-
-  if (trials < 1) { alert('Enter a valid number of trials (>=1).'); return; }
-
-  // If user wants details, collect all results (for CSV/export). If not, we can skip storing per-trial objects to save memory.
-  const collectAll = true; // we always collect so export works reliably
-
-  // Run simulation
-  const sim = simulateMontyHall(trials, collectAll);
-
-  // Summary update
-  const switchPct = ((sim.switchWins / trials) * 100).toFixed(2);
-  const stayPct = ((sim.stayWins / trials) * 100).toFixed(2);
-  document.getElementById('totalTrials').innerText = trials;
-  document.getElementById('switchWins').innerText = `${sim.switchWins}`;
-  document.getElementById('stayWins').innerText = `${sim.stayWins}`;
-  document.getElementById('switchPct').innerText = switchPct + '%';
-  document.getElementById('stayPct').innerText = stayPct + '%';
-
-  // Table rendering
-  const tableContainer = document.getElementById('tableContainer');
-  tableContainer.innerHTML = '';
-  const notice = document.getElementById('notice');
-  notice.innerText = '';
-
-  if (showDetails) {
-    const displayCount = Math.min(maxRows, sim.results.length);
-    tableContainer.innerHTML = buildTableHtml(sim.results, displayCount);
-
-    if (sim.results.length > displayCount) {
-      notice.innerText = `Showing first ${displayCount} rows of ${sim.results.length}. Use "Max rows to display" to change. You can export the full data as CSV.`;
-    }
-  } else {
-    notice.innerText = 'Details table is hidden. Enable "Show details table" to see per-trial rows.';
-  }
-
-  // Store latest results on window for CSV export
-  window.__monty_last = sim;
-});
-
-// CSV export button
-document.getElementById('downloadBtn').addEventListener('click', () => {
-  const sim = window.__monty_last;
-  if (!sim) { alert('Run a simulation first.'); return; }
-  const csv = toCSV(sim.results);
-  const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  const filename = `monty_hall_trials_${sim.trials}.csv`;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-
-// Toggle description when clicking header
-document.getElementById('descHeader').addEventListener('click', function () {
-  const desc = document.getElementById('description');
-  const arrow = document.getElementById('arrow');
-
-  if (desc.style.display === 'none') {
-    desc.style.display = 'block';
-    arrow.style.transform = 'rotate(0deg)'; // arrow down
-  } else {
-    desc.style.display = 'none';
-    arrow.style.transform = 'rotate(-90deg)'; // arrow sideways
-  }
-});
-</script>
+    <script src="script.js" defer></script>
 </body>
 </html>
