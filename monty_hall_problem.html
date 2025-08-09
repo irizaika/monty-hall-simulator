@@ -76,8 +76,8 @@
         <div class="box"><strong>Total trials</strong><div id="totalTrials" class="small">—</div></div>
         <div class="box"><strong>Always switch wins</strong><div id="switchWins" class="small">—</div></div>
         <div class="box"><strong>Never switch wins</strong><div id="stayWins" class="small">—</div></div>
-        <div class="box"><strong>Switch %</strong><div id="switchPct" class="small">—</div></div>
-        <div class="box"><strong>Stay %</strong><div id="stayPct" class="small">—</div></div>
+        <div class="box"><strong>Switch wins%</strong><div id="switchPct" class="small">—</div></div>
+        <div class="box"><strong>Stay wins%</strong><div id="stayPct" class="small">—</div></div>
       </div>
 
       <div id="tableContainer" style="margin-top:12px;"></div>
@@ -199,8 +199,8 @@ document.getElementById('runBtn').addEventListener('click', () => {
   const switchPct = ((sim.switchWins / trials) * 100).toFixed(2);
   const stayPct = ((sim.stayWins / trials) * 100).toFixed(2);
   document.getElementById('totalTrials').innerText = trials;
-  document.getElementById('switchWins').innerText = `${sim.switchWins} (${switchPct}%)`;
-  document.getElementById('stayWins').innerText = `${sim.stayWins} (${stayPct}%)`;
+  document.getElementById('switchWins').innerText = `${sim.switchWins}`;
+  document.getElementById('stayWins').innerText = `${sim.stayWins}`;
   document.getElementById('switchPct').innerText = switchPct + '%';
   document.getElementById('stayPct').innerText = stayPct + '%';
 
